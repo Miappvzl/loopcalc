@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Loop Calc</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#FFD600">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg: #ffffff;
+            --dark: #1a1a1a;
+            --gray: #757575;
+            --light-gray: #f4f4f4;
+            --yellow: #1a1a1a;
+            --border-width: 2px;
+            --invert-filter: invert(0);
+        }
+
+        /* Variables para Modo Oscuro */
+        body.dark-theme {
+            --bg: #121212;
+            --dark: #FFD600;
+            --gray: #a0a0a0;
+            --light-gray: #242424;
+            --invert-filter: invert(1);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg);
+            color: var(--dark);
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+            padding: 2rem 1rem;
+            line-height: 1.5;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .app-wrapper {
+            width: 100%;
+            max-width: 480px;
+            display: flex;
+            flex-direction: column;
+            gap: 2.49rem;
+        }
+
+        header {
+            border-bottom: var(--border-width) solid var(--dark);
+            padding-bottom: 1rem;
+            margin-bottom: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+        }
+
+        .header-titles h1 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 2.5rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: -0.05em;
+            line-height: 1;
+        }
+
+        .subtitle {
+            color: var(--gray);
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+            font-weight: 500;
+        }
+
+        .theme-toggle {
+            background: none;
+            border: var(--border-width) solid var(--dark);
+            color: var(--dark);
+            padding: 0.5rem 1rem;
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .theme-toggle:hover {
+            background-color: var(--dark);
+            color: var(--bg);
+        }
+
+        /* Formulario e Inputs */
+        .form-group {
+            position: relative;
+            margin-bottom: 2rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        label {
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        input {
+            font-family: 'Inter', sans-serif;
+            width: 100%;
+            padding: 1.2rem;
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--dark);
+            background-color: var(--light-gray);
+            border: var(--border-width) solid transparent;
+            border-radius: 0;
+            outline: none;
+            transition: all 0.2s ease;
+        }
+
+        input:hover { background-color: var(--bg); border-color: var(--dark); }
+        input:focus { background-color: var(--bg); border-color: var(--yellow); }
+
+        /* Tooltips */
+        .tooltip {
+            position: absolute;
+            top: -10px;
+            right: 0;
+            background-color: var(--dark);
+            color: var(--bg);
+            padding: 0.5rem 0.8rem;
+            font-size: 0.75rem;
+            font-weight: 500;
+            pointer-events: none;
+            opacity: 0;
+            transform: translateY(-10px);
+            transition: all 0.2s ease;
+            z-index: 10;
+            max-width: 250px;
+            text-align: right;
+        }
+
+        body.dark-theme .tooltip {
+            color: var(--yellow);
+        }
+
+        .form-group:hover .tooltip,
+        .form-group:focus-within .tooltip {
+            opacity: 1;
+            transform: translateY(-100%);
+        }
+
+        /* Botones */
+        button {
+            font-family: 'Space Grotesk', sans-serif;
+            width: 100%;
+            padding: 1.2rem;
+            font-size: 1.1rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            background-color: var(--dark);
+            color: var(--bg);
+            border: var(--border-width) solid var(--dark);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            letter-spacing: 0.05em;
+        }
+
+        button:hover {
+            background-color: var(--yellow);
+            color: #1a1a1a;
+            border-color: var(--yellow);
+        }
+
+        button:active { transform: scale(0.98); }
+
+        .btn-outline {
+            background-color: transparent;
+            color: var(--dark);
+            border-color: var(--dark);
+            margin-top: 1rem;
+        }
+
+        .btn-outline:hover { background-color: var(--dark); color: var(--bg); }
+
+        .btn-text {
+            background: none;
+            border: none;
+            color: var(--gray);
+            font-family: 'Inter', sans-serif;
+            font-size: 0.85rem;
+            text-decoration: underline;
+            padding: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .btn-text:hover { color: var(--dark); background: none; }
+
+        /* Resultados */
+        .results-panel {
+            display: none;
+            border: var(--border-width) solid var(--dark);
+            padding: 2rem;
+            margin-top: 1rem;
+            background-color: var(--bg);
+        }
+
+        .data-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.8rem 0;
+            border-bottom: 1px solid var(--light-gray);
+            font-size: 0.95rem;
+        }
+
+        .data-row:last-of-type { border-bottom: none; }
+        .data-label { color: var(--gray); }
+        .data-value { font-weight: 600; font-family: 'Space Grotesk', sans-serif; font-size: 1.1rem; }
+
+        .highlight-box {
+            background-color: var(--yellow);
+            color: #1a1a1a;
+            padding: 1.5rem;
+            margin-top: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            border: var(--border-width) solid var(--dark);
+        }
+
+        .highlight-box.negative { background-color: var(--dark); color: var(--bg); }
+        .highlight-title { font-size: 0.85rem; text-transform: uppercase; font-weight: 700; }
+        .highlight-amount { font-family: 'Space Grotesk', sans-serif; font-size: 2rem; font-weight: 700; line-height: 1; }
+
+        /* Historial */
+        .history-section { display: none; margin-top: 3rem; }
+        .history-title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.2rem;
+            border-bottom: var(--border-width) solid var(--dark);
+            padding-bottom: 0.5rem;
+            margin-bottom: 1.5rem;
+            text-transform: uppercase;
+        }
+
+        .history-item {
+            padding: 1.2rem;
+            border: 1px solid var(--dark);
+            margin-bottom: 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            transition: background-color 0.2s ease;
+        }
+
+        .history-item:hover { background-color: var(--light-gray); }
+        .hist-top { display: flex; justify-content: space-between; font-size: 0.8rem; color: var(--gray); text-transform: uppercase; font-weight: 600; }
+        .hist-bottom { display: flex; justify-content: space-between; align-items: flex-end; }
+        .hist-rates { font-size: 0.9rem; color: var(--dark); }
+        .hist-profit { font-family: 'Space Grotesk', sans-serif; font-size: 1.2rem; font-weight: 700; }
+    </style>
+</head>
+<body>
+
+    <div class="app-wrapper">
+        <header>
+            <div class="header-titles">
+                <h1>Loop Calc</h1>
+                <div class="subtitle">Arbitraje Fiduciario</div>
+            </div>
+            <button class="theme-toggle" id="btnTheme">Dark</button>
+        </header>
+
+        <main>
+            <div class="form-group">
+                <label for="montoUSD">Inversión USD</label>
+                <input type="number" id="montoUSD" value="100" step="any">
+                <div class="tooltip">Monto exacto a comprar en la mesa de cambio.</div>
+            </div>
+
+            <div class="form-group">
+                <label for="tasaBDV">Tasa BDV (Bs)</label>
+                <input type="number" id="tasaBDV" step="any">
+                <div class="tooltip">Tasa de venta oficial. Comisiones incluidas automáticamente.</div>
+            </div>
+
+            <div class="form-group">
+                <label for="tasaZinli">Tasa Zinli -> USDT</label>
+                <input type="number" id="tasaZinli" value="1.06" step="any">
+                <div class="tooltip">Costo en P2P. Cuántos Zinli entregas por 1 USDT.</div>
+            </div>
+
+            <div class="form-group">
+                <label for="tasaVenta">Tasa USDT -> Bs</label>
+                <input type="number" id="tasaVenta" step="any">
+                <div class="tooltip">Tasa final de venta de USDT para recibir bolívares.</div>
+            </div>
+
+            <button onclick="calcular()">Procesar Cálculo</button>
+
+            <div class="results-panel" id="resultados">
+                <div class="data-row">
+                    <span class="data-label">Costo (C/ Comisiones)</span>
+                    <span class="data-value" id="resInversion">0 Bs</span>
+                </div>
+                <div class="data-row">
+                    <span class="data-label">Capital Binance</span>
+                    <span class="data-value" id="resUsdt">0 USDT</span>
+                </div>
+                <div class="data-row">
+                    <span class="data-label">Retorno bruto</span>
+                    <span class="data-value" id="resRetorno">0 Bs</span>
+                </div>
+
+                <div class="highlight-box" id="cajaGanancia">
+                    <span class="highlight-title">Beneficio Neto</span>
+                    <span class="highlight-amount" id="resGanancia">0 Bs</span>
+                    <span class="highlight-title" style="margin-top: 0.5rem;" id="resRoi">ROI: 0%</span>
+                </div>
+                
+                <button class="btn-outline" onclick="guardarEnHistorial()">Guardar Registro</button>
+            </div>
+
+            <div class="history-section" id="seccionHistorial">
+                <div class="history-title">Registro de Operaciones</div>
+                <div id="listaHistorial"></div>
+                <button class="btn-text" onclick="limpiarHistorial()">Vaciar historial</button>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // --- LÓGICA DE MODO OSCURO ---
+        const btnTheme = document.getElementById('btnTheme');
+        const body = document.body;
+
+        // Cargar preferencia guardada
+        if(localStorage.getItem('temaLoopCalc') === 'dark') {
+            body.classList.add('dark-theme');
+            btnTheme.innerText = 'Light';
+        }
+
+        btnTheme.addEventListener('click', () => {
+            body.classList.toggle('dark-theme');
+            if(body.classList.contains('dark-theme')) {
+                localStorage.setItem('temaLoopCalc', 'dark');
+                btnTheme.innerText = 'Light';
+            } else {
+                localStorage.setItem('temaLoopCalc', 'light');
+                btnTheme.innerText = 'Dark';
+            }
+        });
+
+        // --- REGISTRO DEL SERVICE WORKER (PWA) ---
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js')
+                    .then(reg => console.log('Service Worker registrado con éxito.', reg))
+                    .catch(err => console.error('Error al registrar el Service Worker.', err));
+            });
+        }
+
+        // --- LÓGICA DE LA CALCULADORA ---
+        let ultimoCalculo = null;
+        document.addEventListener('DOMContentLoaded', renderizarHistorial);
+
+        function calcular() {
+            const montoUSD = parseFloat(document.getElementById('montoUSD').value);
+            const tasaBDV = parseFloat(document.getElementById('tasaBDV').value);
+            const tasaZinli = parseFloat(document.getElementById('tasaZinli').value);
+            const tasaVenta = parseFloat(document.getElementById('tasaVenta').value);
+
+            if (!montoUSD || !tasaBDV || !tasaZinli || !tasaVenta) return;
+
+            const comisionTotalMultiplicador = 1.025; 
+            const totalInvertidoBs = (montoUSD * tasaBDV) * comisionTotalMultiplicador;
+            const usdtObtenidos = montoUSD / tasaZinli;
+            const retornoTotalBs = usdtObtenidos * tasaVenta;
+            
+            const gananciaNetaBs = retornoTotalBs - totalInvertidoBs;
+            const roi = ((gananciaNetaBs / totalInvertidoBs) * 100);
+
+            ultimoCalculo = {
+                monto: montoUSD,
+                tasaBDV: tasaBDV,
+                tasaVenta: tasaVenta,
+                ganancia: gananciaNetaBs.toFixed(2),
+                roi: roi.toFixed(2),
+                fecha: new Date().toLocaleDateString('es-VE', { day: '2-digit', month: 'short', hour: '2-digit', minute:'2-digit' })
+            };
+
+            document.getElementById('resInversion').innerText = totalInvertidoBs.toFixed(2) + ' Bs';
+            document.getElementById('resUsdt').innerText = usdtObtenidos.toFixed(2) + ' USDT';
+            document.getElementById('resRetorno').innerText = retornoTotalBs.toFixed(2) + ' Bs';
+            
+            document.getElementById('resGanancia').innerText = gananciaNetaBs.toFixed(2) + ' Bs';
+            document.getElementById('resRoi').innerText = 'ROI: ' + roi.toFixed(2) + '%';
+
+            const cajaGanancia = document.getElementById('cajaGanancia');
+            if (gananciaNetaBs < 0) {
+                cajaGanancia.classList.add('negative');
+                cajaGanancia.style.color = 'var(--bg)';
+            } else {
+                cajaGanancia.classList.remove('negative');
+                cajaGanancia.style.color = '#1a1a1a'; // Mantiene contraste en caja amarilla
+            }
+
+            document.getElementById('resultados').style.display = 'block';
+        }
+
+        function guardarEnHistorial() {
+            if (!ultimoCalculo) return;
+            let historial = JSON.parse(localStorage.getItem('histLoopCalc')) || [];
+            historial.unshift(ultimoCalculo);
+            if (historial.length > 5) historial.pop();
+            localStorage.setItem('histLoopCalc', JSON.stringify(historial));
+            renderizarHistorial();
+        }
+
+        function renderizarHistorial() {
+            const historial = JSON.parse(localStorage.getItem('histLoopCalc')) || [];
+            const contenedorLista = document.getElementById('listaHistorial');
+            const seccionHistorial = document.getElementById('seccionHistorial');
+
+            if (historial.length === 0) {
+                seccionHistorial.style.display = 'none';
+                return;
+            }
+
+            seccionHistorial.style.display = 'block';
+            contenedorLista.innerHTML = '';
+
+            historial.forEach(item => {
+                const div = document.createElement('div');
+                div.className = 'history-item';
+                div.innerHTML = `
+                    <div class="hist-top">
+                        <span>${item.fecha}</span>
+                        <span>Inv: $${item.monto}</span>
+                    </div>
+                    <div class="hist-bottom">
+                        <div class="hist-rates">
+                            BDV: ${item.tasaBDV} <br>
+                            Venta: ${item.tasaVenta}
+                        </div>
+                        <div class="hist-profit">
+                            ${item.ganancia} Bs
+                        </div>
+                    </div>
+                `;
+                contenedorLista.appendChild(div);
+            });
+        }
+
+        function limpiarHistorial() {
+            localStorage.removeItem('histLoopCalc');
+            renderizarHistorial();
+        }
+    </script>
+</body>
+</html>
